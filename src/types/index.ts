@@ -172,6 +172,15 @@ export interface StyleTokens {
   headingTransform: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
   headingLetterSpacing: string;
   customCSS: string;
+  // Infobox variant colors
+  infoColor?: string;
+  infoBorder?: string;
+  warningColor?: string;
+  warningBorder?: string;
+  tipColor?: string;
+  tipBorder?: string;
+  loreColor?: string;
+  loreBorder?: string;
 }
 
 export interface JFStyle {
@@ -227,6 +236,14 @@ export const defaultStyleTokens = (): StyleTokens => ({
   headingTransform: 'none',
   headingLetterSpacing: '0.02em',
   customCSS: '',
+  infoColor: 'rgba(60,120,200,0.1)',
+  infoBorder: '#3a6faa',
+  warningColor: 'rgba(200,130,0,0.1)',
+  warningBorder: '#e0a030',
+  tipColor: 'rgba(50,160,100,0.1)',
+  tipBorder: '#50c090',
+  loreColor: 'rgba(130,90,200,0.1)',
+  loreBorder: '#7c6af0',
 });
 
 export const defaultExportSettings = (): ExportSettings => ({

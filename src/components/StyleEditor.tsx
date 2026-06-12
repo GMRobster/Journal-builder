@@ -6,6 +6,7 @@ import { Input } from './ui/Input';
 import { Select } from './ui/Select';
 import { Textarea } from './ui/Textarea';
 import { Button } from './ui/Button';
+import { STYLE_PRESETS } from '@/lib/stylePresets';
 
 const GOOGLE_FONTS = [
   'Inter', 'Roboto', 'Noto Sans', 'Noto Serif', 'Merriweather',
@@ -49,6 +50,7 @@ export function StyleEditor({ projectId, style }: Props) {
   const { updateStyleTokens, updateStyle, createStyle, deleteStyle, setActiveStyle, duplicateStyle, getActiveProject } = useStore();
   const project = getActiveProject();
   const [section, setSection] = useState<'colors' | 'fonts' | 'layout' | 'custom'>('colors');
+  const [selectedPresetId, setSelectedPresetId] = useState<string>(STYLE_PRESETS[0].id);
 
   const t = style.tokens;
   const set = (updates: Partial<StyleTokens>) => updateStyleTokens(projectId, style.id, updates);
@@ -76,6 +78,30 @@ export function StyleEditor({ projectId, style }: Props) {
         </div>
         <Input label="Name" value={style.name}
           onChange={e => updateStyle(projectId, style.id, { name: e.target.value })} />
+        <div className="flex items-end gap-2">
+          <div className="flex-1">
+            <label className="text-xs text-forge-muted font-medium block mb-1">Preset laden</label>
+            <select
+              className="w-full bg-forge-bg border border-forge-border rounded px-2 py-1.5 text-sm text-forge-text focus:outline-none"
+              value={selectedPresetId}
+              onChange={e => setSelectedPresetId(e.target.value)}
+            >
+              {STYLE_PRESETS.map(p => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              const preset = STYLE_PRESETS.find(p => p.id === selectedPresetId);
+              if (preset) updateStyleTokens(projectId, style.id, preset.tokens);
+            }}
+          >
+            Anwenden
+          </Button>
+        </div>
       </div>
 
       {/* Section tabs */}
@@ -119,6 +145,17 @@ export function StyleEditor({ projectId, style }: Props) {
               <ColorField label="Hintergrund" value={t.readaloudBg} onChange={v => set({ readaloudBg: v })} />
               <ColorField label="Rand" value={t.readaloudBorder} onChange={v => set({ readaloudBorder: v })} />
             </div>
+            <p className="text-xs text-forge-muted uppercase tracking-wide font-medium">Infoboxen</p>
+            <div className="grid grid-cols-2 gap-3">
+              <ColorField label="Info – Hintergrund" value={t.infoColor ?? ''} onChange={v => set({ infoColor: v })} />
+              <ColorField label="Info – Rand" value={t.infoBorder ?? ''} onChange={v => set({ infoBorder: v })} />
+              <ColorField label="Warnung – Hintergrund" value={t.warningColor ?? ''} onChange={v => set({ warningColor: v })} />
+              <ColorField label="Warnung – Rand" value={t.warningBorder ?? ''} onChange={v => set({ warningBorder: v })} />
+              <ColorField label="Tipp – Hintergrund" value={t.tipColor ?? ''} onChange={v => set({ tipColor: v })} />
+              <ColorField label="Tipp – Rand" value={t.tipBorder ?? ''} onChange={v => set({ tipBorder: v })} />
+              <ColorField label="Lore – Hintergrund" value={t.loreColor ?? ''} onChange={v => set({ loreColor: v })} />
+              <ColorField label="Lore – Rand" value={t.loreBorder ?? ''} onChange={v => set({ loreBorder: v })} />
+            </div>
           </>
         )}
 
@@ -133,6 +170,15 @@ export function StyleEditor({ projectId, style }: Props) {
                   set({ googleFontBody: f, fontFamily: f ? `'${f}', sans-serif` : 'sans-serif' });
                 }}
               />
+              <Input
+                label="Eigene Schrift eingeben… (Fließtext)"
+                value={t.googleFontBody}
+                onChange={e => {
+                  const f = e.target.value;
+                  set({ googleFontBody: f, fontFamily: f ? `'${f}', sans-serif` : 'sans-serif' });
+                }}
+                placeholder="z. B. MedievalSharp"
+              />
               <Select label="Google Font (Überschriften)"
                 value={t.googleFontHeading}
                 options={fontOptions}
@@ -140,6 +186,15 @@ export function StyleEditor({ projectId, style }: Props) {
                   const f = e.target.value;
                   set({ googleFontHeading: f, headingFontFamily: f ? `'${f}', serif` : 'serif' });
                 }}
+              />
+              <Input
+                label="Eigene Schrift eingeben… (Überschriften)"
+                value={t.googleFontHeading}
+                onChange={e => {
+                  const f = e.target.value;
+                  set({ googleFontHeading: f, headingFontFamily: f ? `'${f}', serif` : 'serif' });
+                }}
+                placeholder="z. B. Cinzel Decorative"
               />
               <Input label="Font-Familie (CSS, Fließtext)" value={t.fontFamily}
                 onChange={e => set({ fontFamily: e.target.value })}
